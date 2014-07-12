@@ -53,6 +53,7 @@ struct GiGdipCanvas::Impl
     {
         SAFEDEL(cachedBmp[0]);
         SAFEDEL(cachedBmp[1]);
+        SAFEDEL(path);
 
         if (0 == InterlockedDecrement(&_canvasCount)    // 最后一个对象
             && _gdipToken != 0)                         // 已初始化GDI+
@@ -221,9 +222,27 @@ void GiGdipCanvas::setPen(int argb, float width, int style, float phase, float)
     if (width > 0.1f) {
         _impl->pen->SetWidth(width);
     }
-    if (style >= 0 && style <= DashStyleDashDotDot) {
-        _impl->pen->SetDashStyle((DashStyle)style);
-        _impl->pen->SetDashOffset(phase);
+    if (style >= 0) {
+        int linecap = style & kLineCapMask;
+
+        style = style & kLineDashMask;
+        if (style >= 0 && style <= DashStyleDashDotDot) {
+            _impl->pen->SetDashStyle((DashStyle)style);
+            _impl->pen->SetDashOffset(phase);
+        }
+        if (linecap & kLineCapButt) {
+            _impl->pen->SetLineCap(LineCapFlat, LineCapFlat, DashCapFlat);
+        }
+        else if (linecap & kLineCapRound) {
+            _impl->pen->SetLineCap(LineCapRound, LineCapRound, DashCapRound);
+        }
+        else if (linecap & kLineCapSquare) {
+            _impl->pen->SetLineCap(LineCapSquare, LineCapSquare, DashCapFlat);
+        }
+        else {
+            LineCap cap = (style > 0 && style < 5) ? LineCapFlat : LineCapRound;
+            _impl->pen->SetLineCap(cap, cap, DashCapFlat);
+        }
     }
 }
 
@@ -379,15 +398,13 @@ void GiGdipCanvas::closePath()
 
 void GiGdipCanvas::drawPath(bool stroke, bool fill)
 {
-    if (_impl->getGs() && _impl->path) {
+    if (_impl->getGs() && _impl->path && (stroke || fill)) {
         if (_impl->brush && fill) {
             _impl->getGs()->FillPath(_impl->brush, _impl->path);
         }
         if (_impl->pen && stroke) {
             _impl->getGs()->DrawPath(_impl->pen, _impl->path);
         }
-        delete _impl->path;
-        _impl->path = NULL;
     }
 }
 
