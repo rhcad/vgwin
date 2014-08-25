@@ -416,7 +416,7 @@ bool GiGdipCanvas::clipPath()
     return true;
 }
 
-bool GiGdipCanvas::drawHandle(float x, float y, int)
+bool GiGdipCanvas::drawHandle(float x, float y, int, float)
 {
     Bitmap* bmp = NULL;//new Bitmap(L"A:\\vgdot1.png");
     bool ret = false;
