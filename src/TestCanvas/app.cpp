@@ -136,8 +136,18 @@ void regen(HWND hwnd)
 
 void switchTest(HWND hwnd)
 {
-    int a[] = { TestCanvas::kRect, TestCanvas::kLine, TestCanvas::kTextAt, TestCanvas::kEllipse, TestCanvas::kQuadBezier, TestCanvas::kCubicBezier, TestCanvas::kClearRect, 
-        TestCanvas::kClearRect | TestCanvas::kPolygon | TestCanvas::kLine, TestCanvas::kClipPath, TestCanvas::kHandle, TestCanvas::kDynCurves };
+    int a[] = { TestCanvas::kRect,
+        TestCanvas::kLine,
+        TestCanvas::kTextAt,
+        TestCanvas::kRotateText,
+        TestCanvas::kEllipse,
+        TestCanvas::kQuadBezier,
+        TestCanvas::kCubicBezier,
+        TestCanvas::kClearRect, 
+        TestCanvas::kClearRect | TestCanvas::kPolygon | TestCanvas::kLine,
+        TestCanvas::kClipPath,
+        TestCanvas::kHandle,
+        TestCanvas::kDynCurves };
     int n = sizeof(a)/sizeof(a[0]);
     int i = n;
 

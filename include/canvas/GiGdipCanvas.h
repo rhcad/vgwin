@@ -73,7 +73,7 @@ public:
     bool clipPath();
     bool drawHandle(float x, float y, int type, float angle);
     bool drawBitmap(const char* name, float xc, float yc, float w, float h, float angle);
-    float drawTextAt(const char* text, float x, float y, float h, int align);
+    float drawTextAt(const char* text, float x, float y, float h, int align, float angle);
     
 private:
     bool getEncoder(const wchar_t* filename, wchar_t format[20], CLSID& clsidEncoder);

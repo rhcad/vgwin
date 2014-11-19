@@ -440,7 +440,7 @@ bool GiGdipCanvas::drawBitmap(const char*, float, float,
     return false;
 }
 
-float GiGdipCanvas::drawTextAt(const char* text, float x, float y, float, int align)
+float GiGdipCanvas::drawTextAt(const char* text, float x, float y, float, int align, float angle)
 {
     float w = 0;
 
