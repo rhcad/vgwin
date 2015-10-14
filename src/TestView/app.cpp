@@ -65,7 +65,7 @@ void exportSVG(HWND hwnd)
 {
     char filename[MAX_PATH];
     GetModuleFileNameA(NULL, filename, MAX_PATH);
-    strcpy_s(strchr(filename, '.'), 5, ".svg");
+    strcpy_s(strrchr(filename, '.'), 5, ".svg");
 
     RECT rc;
     GetWindowRect(hwnd, &rc);

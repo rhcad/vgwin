@@ -24,4 +24,4 @@ To contribute, please follow the branching model outlined here: [A successful Gi
 ## How to Compile
 
 - Download or clone [vgcore](https://github.com/rhcad/vgcore) to `..\vgcore`.
-- Open `Test_vc9.sln` in Visual Studio 2008 (Need VC++), then run `TestView` or `TestCanvas` application.
+- Open `Test_vc9.sln` in Visual Studio 2008 or `Test_vc10.sln` in Visual Studio 2010 (Need VC++), then run `TestView` or `TestCanvas` application.
