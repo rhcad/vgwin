@@ -2,6 +2,9 @@
 
 This is a lightweight 2D vector drawing framework using [vgcore](https://github.com/rhcad/vgcore) for Windows.
 
+- [TestText project](src/TestText) uses MFC and GDI+.
+- [TestView project](src/TestView) uses WIN32 API and GDI+.
+
 If you want to use TouchVG in WPF projects, please visit [vgwpf](https://github.com/rhcad/vgwpf).
 
 ## License

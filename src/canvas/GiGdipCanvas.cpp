@@ -33,9 +33,11 @@ struct GiGdipCanvas::Impl
     Color           bkcolor;            // 背景色
     GraphicsState   savegs[10];         // 保存的绘图状态
     RECT            clip;               // 初始剪切区域
+    HFONT           hFont;              // 当前字体
+    int             lastFontHeight;     // 上次的字体高度
 
     Impl() : gs(NULL), bufGs(NULL), bufBmp(NULL)
-        , pen(NULL), brush(NULL), path(NULL)
+        , pen(NULL), brush(NULL), path(NULL), hFont(NULL)
     {
         cachedBmp[0] = cachedBmp[1] = NULL;
 
@@ -151,6 +153,10 @@ void GiGdipCanvas::endPaint()
     if (_impl->bufGs && _impl->gs) {
         _impl->gs->SetInterpolationMode(InterpolationModeInvalid);
         _impl->gs->DrawImage(_impl->bufBmp, _impl->clip.left, _impl->clip.top);
+    }
+    if (_impl->hFont) {
+        DeleteObject(_impl->hFont);
+        _impl->hFont = NULL;
     }
     SAFEDEL(_impl->bufGs);
     SAFEDEL(_impl->bufBmp);
@@ -440,23 +446,16 @@ bool GiGdipCanvas::drawBitmap(const char*, float, float,
     return false;
 }
 
-float GiGdipCanvas::drawTextAt(const char* text, float x, float y, float, int align, float angle)
+float GiGdipCanvas::drawTextAt(const char* text, float x, float y, float h, int align, float)
 {
     float w = 0;
+    int fontHeight = (int)(h + 0.5f);
+    SIZE size;
 
     if (text && _impl->getGs()) {
-#if 0
-        Color color;
-        _impl->pen->GetColor(&color);
-        SolidBrush brush(color);
-
-        Font font(&FontFamily(L"Arial"), 72);
-        _impl->getGs()->DrawString(L"Look at this text汉字!", -1, 
-            &font, PointF(0, 0), &brush);
-#else
         HDC hdc = _impl->getGs()->GetHDC();
 
-        SetBkMode(hdc, TRANSPARENT);
+        //SetBkMode(hdc, TRANSPARENT);
         align = (1 == align) ? TA_CENTER : (2 == align ? TA_RIGHT : TA_LEFT);
         SetTextAlign(hdc, align | TA_TOP);
 
@@ -466,15 +465,33 @@ float GiGdipCanvas::drawTextAt(const char* text, float x, float y, float, int al
             SetTextColor(hdc, color.ToCOLORREF());
         }
 
+        if (!_impl->hFont || _impl->lastFontHeight != fontHeight) {
+            LOGFONTA lf;
+
+            memset(&lf, 0, sizeof(lf));
+            lf.lfHeight = fontHeight;
+            lstrcpynA(lf.lfFaceName, "宋体", LF_FACESIZE);
+            lf.lfOutPrecision   = OUT_TT_ONLY_PRECIS;
+	        lf.lfClipPrecision  = CLIP_DEFAULT_PRECIS;
+	        lf.lfQuality        = ANTIALIASED_QUALITY;
+	        lf.lfPitchAndFamily = DEFAULT_PITCH | FF_DONTCARE;
+
+            if (_impl->hFont) {
+                DeleteObject(_impl->hFont);
+            }
+            _impl->hFont = CreateFontIndirectA(&lf);
+            _impl->lastFontHeight = fontHeight;
+        }
+
+        HGDIOBJ hOldFont = SelectObject(hdc, _impl->hFont);
         TextOutA(hdc, (int)(x + 0.5f), (int)(y + 0.5f), text, strlen(text));
 
-        SIZE size;
         if (GetTextExtentPointA(hdc, text, strlen(text), &size)) {
             w = (float)size.cx;
         }
 
+        SelectObject(hdc, hOldFont);
         _impl->getGs()->ReleaseHDC(hdc);
-#endif
     }
 
     return w;
